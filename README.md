@@ -184,3 +184,18 @@ show spanning-tree
 ```bash
 show ip interface brief
 ```
+
+## Port Security
+```bash
+switchport mode access
+```
+```bash
+switchport port-security restrict
+```
+```bash
+switchport port-security maximum 2
+```
+
+
+
+
