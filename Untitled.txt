@@ -168,7 +168,7 @@ permit icmp network_id wildcard_mask host router_id echo
 interface vlan 1
 ip access-group 100 in
 exit
-access-list 100 permit tcp host ip host switch_ip eq 22	
+access-list 100 permit tcp host ip_add_pc1 host switch_ip eq 22	
 access-list 100 permit icmp network_id wildcard_mask host switch_id echo
 
 
