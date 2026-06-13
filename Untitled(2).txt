@@ -1,0 +1,201 @@
+SECTION 1
+
+Always write 'write' in 'enable' mode to ensure that you saved your progress on devices!
+
+1.1) Hostname and Interface Description config:
+
+Inside Router:
+en
+conf t
+hostname R1
+interface gigabitethernet0/0
+descripttion Sw1 (case sensitive)
+interface gigabitethernet0/1
+descripttion Internet (case sensitive)
+interface range gigabitethernet0/0-1 
+no shutdown
+
+
+Inside Switch:
+en
+conf t
+hostname Sw1
+
+in switch> For the router:
+interface gigabitethernet0/1
+description R1
+
+For PC's(do similar for all interfaces):
+interface fas0/1
+description PC1
+
+
+1.2) IP Planning:
+subnet mask: derive from a number: 30 -> 255.255.255.252
+network id: right side of subnet bit should all be 0's
+broadcast id: right side of subnet bit should all be 1's
+first usable id: network id + 1
+last usable id: broadcast id - 1
+total usable IPs: 32-subnet_num
+
+now, click PCs one by one and assign the following:
+
+Desktop>IP configuration> IPv4 address, subnet mask & default gateway.
+
+For the Router:
+
+
+
+interface gigabitEthernet0/0
+ip address ip_address subnet_mask
+no shutdown
+and other
+
+
+For the Switch:
+
+
+interface vlan 1
+ip address ip_address subnet_mask
+no shutdown
+end
+
+
+SECTION 2
+
+2.1) Port Security:
+
+Open the Switch and do the following:
+
+en
+conf t 
+then, there are 2 ways:
+one by one:
+interface fastEthernet 0/1 
+switchport mode acc
+switchport mode port-security
+switchport mode port-security violation restrict
+switchport mode port-security maximum ? ya da 2
+do sh runn
+
+
+or:
+
+interface range fastEthernet 0/x-y
+switchport mode acc
+switchport port-security
+switchport port-security violation restrict
+switchport port-security maximum ? ya da 2
+do sh runn
+
+
+2.2) STP PortFast config(for end users):
+
+Open the Switch and do the following:
+
+en
+conf t 
+then, there are 2 ways:
+one by one:
+interface fastEthernet 0/1 
+spanning-tree portfast
+
+or:
+
+interface range fastEthernet 0/x-y
+spanning-tree portfast
+
+
+
+SECTION 3
+
+3.1) SSH config on R1:
+
+Open the Router:
+
+for ssh config, we need both host name and domain name(we have hostname as previously assigned)
+
+if hostname exists, just type:
+
+ip domain name exam.com
+
+then, write this exactly:
+
+username admin password admin
+
+continue:
+
+crypto key generate rsa
+1024
+ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+
+For accessing to the router with PC's, we first need to type the following on the router's CLI:
+
+enable password admin
+
+
+
+3.2) ACL config for PAT:
+
+open router:
+
+access-list 10 permit network_id(/24 one) wildcard_mask(/24 one)
+
+3.3) Console connection security rule
+
+on R1:
+
+line console 0
+password admin
+login
+end
+
+on Switch:
+
+line console 0
+password admin
+login
+end
+
+SECTION 4
+
+4.1) NAT config on R1:
+
+Determine the inbound(linked with local) and outbound interfaces(linked with internet router)
+
+Open R1:
+
+interface gigabitethernet0/0
+ip nat inside
+interface gigabitethernet0/1
+ip nat outside
+exit
+ip route 0.0.0.0 0.0.0.0 120.120.120.2
+ping 8.8.8.8
+ip nat inside source list 10 interface gigabitethernet0/1
+
+after pinging from pc to 8.8.8.8 , check with show ip nat translations on R1
+
+
+mixed with 4.2 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
